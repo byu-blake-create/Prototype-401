@@ -24,7 +24,7 @@ flowchart LR
     end
 
     subgraph Server
-        Backend[Express API\n:5000]
+        Backend[Express API\n:5057]
     end
 
     subgraph Data
@@ -127,7 +127,7 @@ Edit `backend/.env` and set your PostgreSQL credentials:
 - `DB_NAME` — `gylt`
 - `DB_PASSWORD` — your PostgreSQL password
 - `DB_PORT` — usually `5432`
-- `PORT` — backend port (default `5000`)
+- `PORT` — backend port (default `5057`)
 
 ## Running the Application
 
@@ -138,7 +138,7 @@ Edit `backend/.env` and set your PostgreSQL credentials:
    npm start
    ```
 
-   You should see something like: `Server is running on port 5000` and `Connected to PostgreSQL database`.
+   You should see something like: `Server is running on port 5057` and `Connected to PostgreSQL database`.
 
 2. **Start the frontend** (Terminal 2):
 

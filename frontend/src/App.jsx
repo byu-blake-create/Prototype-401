@@ -186,7 +186,7 @@ export default function App() {
         const isNetworkError = err?.message?.includes("Failed to fetch") || err?.code === "ECONNREFUSED";
         setError(
           isNetworkError
-            ? "Cannot reach the backend. Make sure the backend server is running on port 5000, then click Retry."
+            ? "Cannot reach the backend. Make sure the backend server is running on port 5057 (or your backend .env PORT), then click Retry."
             : err?.message || "Failed to load data. Please try again later."
         );
       } finally {
