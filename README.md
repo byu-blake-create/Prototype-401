@@ -54,9 +54,9 @@ Install and verify the following before running the project locally.
 | **Node.js** (v18+) | Runtime for frontend and backend | [nodejs.org](https://nodejs.org/) | `node -v` |
 | **npm** | Package manager | Bundled with Node.js | `npm -v` |
 | **PostgreSQL** (v12+) | Database | [postgresql.org/download](https://www.postgresql.org/download/) | `psql --version` |
-| **psql** in PATH | Run schema and seed scripts | Included with PostgreSQL | `psql -U postgres -c "SELECT 1"` |
+| **psql** in PATH | Run schema and seed scripts | Included with PostgreSQL | `psql -d postgres -c "SELECT 1"` |
 
-- Create a PostgreSQL user and database (e.g. `postgres` user and `gylt` database) and ensure `psql` can connect.
+- Make sure `psql` can connect with a role that can create databases: `psql -d postgres -c "SELECT current_user;"`
 
 ## Installation and Setup
 
@@ -73,22 +73,45 @@ npm install
 
 ### 2. Create the database
 
-Using a PostgreSQL user that can create databases (e.g. `postgres`):
+Use a PostgreSQL role that can create databases.
+
+First, confirm which role your `psql` session is using:
 
 ```bash
-psql -U postgres -c "CREATE DATABASE gylt;"
+psql -d postgres -c "SELECT current_user;"
 ```
 
-(If `gylt` already exists, skip or drop it first: `DROP DATABASE gylt;` then create again.)
+Then create the database (safe to rerun):
+
+```bash
+psql -d postgres -c "DROP DATABASE IF EXISTS gylt;"
+psql -d postgres -c "CREATE DATABASE gylt;"
+```
+
+If your setup requires an explicit user, add `-U <your_pg_user>` to the commands above.
+
+Format:
+
+```bash
+psql -U <your_pg_user> -d <database_name> <rest_of_command>
+```
+
+Example:
+
+```bash
+psql -U postgres -d gylt -f db/schema.sql
+```
 
 ### 3. Run schema and seed
 
 From the project root:
 
 ```bash
-psql -U postgres -d gylt -f db/schema.sql
-psql -U postgres -d gylt -f db/seed.sql
+psql -d gylt -f db/schema.sql
+psql -d gylt -f db/seed.sql
 ```
+
+If needed, add `-U <your_pg_user>`.
 
 ### 4. Configure environment variables
 
@@ -99,7 +122,7 @@ cp .env.example backend/.env
 
 Edit `backend/.env` and set your PostgreSQL credentials:
 
-- `DB_USER` — PostgreSQL username (e.g. `postgres`)
+- `DB_USER` — PostgreSQL username (use the role from `SELECT current_user;`)
 - `DB_HOST` — usually `localhost`
 - `DB_NAME` — `gylt`
 - `DB_PASSWORD` — your PostgreSQL password
@@ -147,8 +170,10 @@ This demonstrates the full path: **UI → API → database → persistence**.
 Using the same PostgreSQL user and database as in setup:
 
 ```bash
-psql -U postgres -d gylt -c "SELECT user_id, quiz_id, score, total_questions, completed_at FROM quizzes_completed ORDER BY completed_at DESC LIMIT 5;"
+psql -d gylt -c "SELECT user_id, quiz_id, score, total_questions, completed_at FROM quizzes_completed ORDER BY completed_at DESC LIMIT 5;"
 ```
+
+If needed, add `-U <your_pg_user>`.
 
 You should see a row for the quiz you just completed (e.g. `user_id=1`, `quiz_id=1`, your `score` and `total_questions`).
 
